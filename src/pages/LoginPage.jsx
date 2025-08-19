@@ -12,7 +12,7 @@ export default function LoginPage() {
   const $auth = useStore(authState);
   const { t } = useTranslation();
   const [authType, setAuthType] = useState("basic");
-  const [serverUrl, setServerUrl] = useState("");
+  const [serverUrl, setServerUrl] = useState("https://rss.foxhold.net");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
