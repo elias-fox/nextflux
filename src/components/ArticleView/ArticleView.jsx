@@ -98,15 +98,17 @@ const ArticleView = () => {
   }, [articleId, $filteredArticles]);
 
   const handleLinkWithImg = (domNode) => {
-    const imgNode = domNode.children.find(
+    const imgNodes = domNode.children.filter(
       (child) => child.type === "tag" && child.name === "img",
     );
 
-    if (imgNode) {
+    if (imgNodes.length > 0) {
       const hostname = getHostname(domNode.attribs.href);
       return (
         <>
-          <ArticleImage imgNode={imgNode} />
+          {imgNodes.map((imgNode, index) => (
+            <ArticleImage imgNode={imgNode} key={imgNode.attribs?.src || index} />
+          ))}
           <div className="flex justify-center">
             <Chip
               color="primary"
@@ -142,18 +144,16 @@ const ArticleView = () => {
         <motion.div
           key={articleId ? "content" : "empty"}
           className={cn(
-            "flex-1 p-0 md:pr-2 md:py-2 h-screen fixed md:static inset-0 z-20",
+            "flex-1 p-0 h-screen fixed md:static inset-0 z-20",
             !articleId ? "hidden md:flex md:flex-1" : "",
           )}
           initial={
-            articleId
-              ? { opacity: 1, x: "100%" }
-              : { opacity: 0, x: 0, scale: 0.8 }
+            articleId ? { opacity: 1, x: 40 } : { opacity: 0, x: 0, scale: 0.8 }
           }
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={
             articleId
-              ? { opacity: 0, x: "100%", scale: 1 }
+              ? { opacity: 0, x: 40, scale: 1 }
               : { opacity: 0, x: 0, scale: 0.8 }
           }
           transition={{
@@ -169,7 +169,7 @@ const ArticleView = () => {
             <ScrollShadow
               ref={scrollAreaRef}
               isEnabled={false}
-              className="article-scroll-area h-full bg-background rounded-none md:rounded-lg shadow-none md:shadow-custom"
+              className="article-scroll-area h-full bg-content2 md:bg-transparent"
             >
               <ActionButtons parentRef={scrollAreaRef} />
 

@@ -14,7 +14,7 @@ import {
   handleToggleStar,
   handleToggleContent,
 } from "@/handlers/articleHandlers.js";
-import { Button, Divider, Navbar, NavbarContent, Tooltip } from "@heroui/react";
+import { Button, Navbar, NavbarContent, Tooltip } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "@nanostores/react";
 import {
@@ -109,15 +109,15 @@ export default function ActionButtons({ parentRef }) {
 
   return (
     <Navbar
-      className="action-buttons py-2 standalone:pt-safe-or-2.5"
+      className="action-buttons py-2 standalone:pt-safe-or-2.5 bg-gradient-to-b from-content2/70 to-background/0"
       maxWidth="full"
-      isBordered
+      isBlurred={false}
       shouldHideOnScroll={autoHideToolbar}
       parentRef={parentRef}
       classNames={{ wrapper: "px-2 h-auto", content: "gap-0" }}
     >
       <NavbarContent className="flex items-center space-between">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 bg-background/70 backdrop-blur-lg shadow-custom rounded-full p-1 mr-2">
           <Tooltip
             content={t("common.close")}
             classNames={{ content: "shadow-custom!" }}
@@ -133,14 +133,14 @@ export default function ActionButtons({ parentRef }) {
               <span className="sr-only">{t("common.close")}</span>
             </Button>
           </Tooltip>
-          <Divider orientation="vertical" className="h-6" />
+        </div>
+        <div className="hidden md:flex items-center gap-1 bg-background/70 backdrop-blur-lg shadow-custom rounded-full p-1">
           <Tooltip
             content={t("common.previous")}
             classNames={{ content: "shadow-custom!" }}
           >
             <Button
               onPress={handlePrevious}
-              className="hidden md:flex"
               isDisabled={currentIndex <= 0}
               size="sm"
               radius="full"
@@ -157,7 +157,6 @@ export default function ActionButtons({ parentRef }) {
           >
             <Button
               onPress={handleNext}
-              className="hidden md:flex"
               isDisabled={currentIndex >= $articles.length - 1}
               size="sm"
               radius="full"
@@ -169,7 +168,7 @@ export default function ActionButtons({ parentRef }) {
             </Button>
           </Tooltip>
         </div>
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1 bg-background/70 backdrop-blur-lg shadow-custom rounded-full p-1">
           <Tooltip
             content={
               $activeArticle?.status === "read"
