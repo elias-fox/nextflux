@@ -294,6 +294,10 @@ const ArticleView = () => {
                             domNode.name === "iframe"
                           ) {
                             const { src } = domNode.attribs;
+                            domNode.attribs = {
+                              ...domNode.attribs,
+                              referrerpolicy: "strict-origin-when-cross-origin",
+                            };
 
                             // 判断是否为 Bilibili iframe
                             const isBilibili = src && src.includes("bilibili");
