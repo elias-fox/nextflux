@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useStore } from "@nanostores/react";
 import { PhotoProvider } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
@@ -42,6 +42,7 @@ const ArticleView = () => {
     titleFontSize,
     titleAlignType,
     reduceMotion,
+    floatingSidebar,
   } = useStore(settingsState);
   const { lightTheme } = useStore(themeState);
   const $currentThemeMode = useStore(currentThemeMode);
@@ -107,7 +108,10 @@ const ArticleView = () => {
       return (
         <>
           {imgNodes.map((imgNode, index) => (
-            <ArticleImage imgNode={imgNode} key={imgNode.attribs?.src || index} />
+            <ArticleImage
+              imgNode={imgNode}
+              key={imgNode.attribs?.src || index}
+            />
           ))}
           <div className="flex justify-center">
             <Chip
@@ -138,13 +142,15 @@ const ArticleView = () => {
     enclosure.mime_type?.startsWith("audio/"),
   );
 
+  const navigate = useNavigate();
+
   return (
     <MotionConfig reducedMotion={reduceMotion ? "always" : "never"}>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={articleId ? "content" : "empty"}
           className={cn(
-            "flex-1 p-0 h-screen fixed md:static inset-0 z-20",
+            "flex-1 p-0 h-screen fixed md:static inset-0 z-20 md:pr-2 md:py-2",
             !articleId ? "hidden md:flex md:flex-1" : "",
           )}
           initial={
@@ -169,7 +175,12 @@ const ArticleView = () => {
             <ScrollShadow
               ref={scrollAreaRef}
               isEnabled={false}
-              className="article-scroll-area h-full bg-content2 md:bg-transparent"
+              className={cn(
+                "article-scroll-area h-full bg-content2 md:bg-transparent",
+                floatingSidebar
+                  ? "md:bg-transparent"
+                  : "md:bg-background md:shadow-custom md:rounded-2xl",
+              )}
             >
               <ActionButtons parentRef={scrollAreaRef} />
 
@@ -196,15 +207,23 @@ const ArticleView = () => {
                     className="article-header"
                     style={{ textAlign: titleAlignType }}
                   >
-                    <div
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(`/feed/${$activeArticle?.feed?.id}`)
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ")
+                          navigate(`/feed/${$activeArticle?.feed?.id}`);
+                      }}
                       className={cn(
-                        "text-default-500 text-sm flex items-center gap-1",
+                        "text-default-500 text-sm flex items-center gap-1 hover:cursor-pointer focus:outline-none",
                         titleAlignType === "center" ? "justify-center" : "",
                       )}
                     >
                       <FeedIcon feedId={$activeArticle?.feed?.id} />
                       {$activeArticle?.feed?.title}
-                    </div>
+                    </button>
                     <h1
                       className="article-title font-semibold my-2 hover:cursor-pointer leading-tight"
                       style={{
@@ -275,6 +294,10 @@ const ArticleView = () => {
                             domNode.name === "iframe"
                           ) {
                             const { src } = domNode.attribs;
+                            domNode.attribs = {
+                              ...domNode.attribs,
+                              referrerpolicy: "strict-origin-when-cross-origin",
+                            };
 
                             // 判断是否为 Bilibili iframe
                             const isBilibili = src && src.includes("bilibili");
